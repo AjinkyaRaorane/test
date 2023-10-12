@@ -15,7 +15,7 @@ jobs:
         id: pr-description
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: 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
           script: |
             const prDescription = context.payload.pull_request.body;
             const ticketPattern = /^IAM-\d+\s.*$/;
