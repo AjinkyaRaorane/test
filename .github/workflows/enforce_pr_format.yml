@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug PR Title
+        run: |
+          const prTitle = context.payload.pull_request.title;
+          console.log(`PR Title: ${prTitle}`);
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Check PR Title
         id: pr-title
         uses: actions/github-script@v6
@@ -18,9 +25,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prTitle = context.payload.pull_request.title;
-            const titlePattern = /^IAM-\d+: .+/;
-            console.log(`PR Title: ${prTitle}`);
+            const titlePattern = /^(IAM|JIRA)-\d+: .+$/;
             console.log(`Regex Match: ${titlePattern.test(prTitle)}`);
             if (!titlePattern.test(prTitle)) {
-              core.setFailed('PR title does not match the required format. It should start with "IAM-<number>:" followed by a description.');
+              core.setFailed('PR title does not match the required format. It should start with "IAM-<number>:" or "JIRA-<number>:" followed by a description.');
             }
