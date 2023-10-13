@@ -18,7 +18,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prDescription = context.payload.pull_request.body;
-            const ticketPattern = /^IAM-\d+:/;
+            const ticketPattern = /^IAM-\d+:\s.+$/;
             console.log(`PR Description: ${prDescription}`);
             console.log(`Regex Match: ${ticketPattern.test(prDescription)}`);
             if (!ticketPattern.test(prDescription)) {
