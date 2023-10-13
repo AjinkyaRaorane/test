@@ -18,7 +18,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prTitle = context.payload.pull_request.title;
-            const titlePattern = /^IAM-\d+: .+$/;
+            const titlePattern = /^IAM-\d+: .+/;
             console.log(`PR Title: ${prTitle}`);
             console.log(`Regex Match: ${titlePattern.test(prTitle)}`);
             if (!titlePattern.test(prTitle)) {
