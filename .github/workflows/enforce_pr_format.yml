@@ -13,12 +13,12 @@ jobs:
         script: |
           const payload = context.payload
           const prTitle = payload.pull_request.title
-          // The pattern for JIRA ticket format
-          const jiraPattern = /[A-Z]+-\d+/g
-          if (!jiraPattern.test(prTitle)) {
-            console.log('The PR title does not match JIRA ticket format!')
+          // Modify the pattern to match the required format
+          const titlePattern = /^IAM-\d+: .+$/
+          if (!titlePattern.test(prTitle)) {
+            console.log('The PR title does not match the required format!')
             // Fails the workflow
-            core.setFailed('PR title does not match JIRA ticket format!')
+            core.setFailed('PR title does not match the required format!')
           } else {
             console.log('PR title format is correct.')
           }
