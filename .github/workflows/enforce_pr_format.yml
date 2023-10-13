@@ -1,35 +1,25 @@
-name: Enforce PR Title Format
+name: Enforce PR Format
 
 on:
   pull_request:
     types:
       - opened
+      - edited
       - synchronize
 
 jobs:
-  enforce-pr-title-format:
+  enforce-pr-format:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug PR Title
-        run: echo "PR Title: ${{ github.event.pull_request.title }}"
-      
-      - name: Debug Regex Pattern
-        run: echo "Regex Pattern: /^(IAM-\d+|JIRA-\d+): .+$/"
-      
-      - name: Check PR Title
-        id: pr-title
+      - name: Check PR Description
+        id: pr-description
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const prTitle = context.payload.pull_request.title;
-            const titlePattern = /^(IAM-\d+|JIRA-\d+): .+$/;
-            console.log(`PR Title: ${prTitle}`);
-            console.log(`Regex Match: ${titlePattern.test(prTitle)}`);
-            if (!titlePattern.test(prTitle)) {
-              core.setFailed('PR title does not match the required format. It should start with "IAM-<number>:" or "JIRA-<number>:" followed by a description.');
-            }
-
-              core.setFailed('PR title does not match the required format. It should start with "IAM-<number>:" or "JIRA-<number>:" followed by a description.');
+            const prDescription = context.payload.pull_request.body;
+            const ticketPattern = /^IAM-\d+:/;
+            if (!ticketPattern.test(prDescription)) {
+              core.setFailed('PR description does not reference an IAM or Jira ticket.');
             }
