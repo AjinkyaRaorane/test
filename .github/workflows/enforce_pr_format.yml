@@ -30,3 +30,6 @@ jobs:
             if (!titlePattern.test(prTitle)) {
               core.setFailed('PR title does not match the required format. It should start with "IAM-<number>:" or "JIRA-<number>:" followed by a description.');
             }
+
+              core.setFailed('PR title does not match the required format. It should start with "IAM-<number>:" or "JIRA-<number>:" followed by a description.');
+            }
