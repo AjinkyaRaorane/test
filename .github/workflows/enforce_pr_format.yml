@@ -1,4 +1,4 @@
-name: PR Compliance Check
+name: Enforce PR Title Format
 
 on:
   pull_request:
@@ -7,26 +7,20 @@ on:
       - synchronize
 
 jobs:
-  check_pr_compliance:
+  enforce-pr-title-format:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check PR Title Format
-        run: |
-          pr_title="${{ github.event.pull_request.title }}"
-          # Define your regex pattern for the desired title format
-          regex_pattern="^(IAM-\d+|JIRA-\d+): .+"
-          if [[ ! "${pr_title}" =~ ${regex_pattern} ]]; then
-            echo "PR title does not match the required format. It should start with 'IAM-<number>' or 'JIRA-<number>:' followed by a description."
-            exit 1
-          fi
-
-      - name: Check for Jira Reference
-        run: |
-          pr_body="${{ github.event.pull_request.body }}"
-          # Define your regex pattern for detecting Jira references
-          jira_pattern="(IAM-\d+|JIRA-\d+)"
-          if [[ ! "${pr_body}" =~ ${jira_pattern} ]]; then
-            echo "PR description does not contain a reference to a Jira ticket (e.g., IAM-123 or JIRA-456)."
-            exit 1
-          fi
+      - name: Check PR Title
+        id: pr-title
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prTitle = context.payload.pull_request.title;
+            const titlePattern = /^IAM-\d+: .+$/;
+            console.log(`PR Title: ${prTitle}`);
+            console.log(`Regex Match: ${titlePattern.test(prTitle)}`);
+            if (!titlePattern.test(prTitle)) {
+              core.setFailed('PR title does not match the required format. It should start with "IAM-<number>:" followed by a description.');
+            }
