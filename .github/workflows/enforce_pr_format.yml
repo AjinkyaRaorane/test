@@ -1,24 +1,39 @@
-name: "PR Title Check"
+name: "Enforce Branch and PR Title Pattern"
+
 on:
   pull_request:
     types: [opened, edited, synchronize]
+  push:
+    branches:
+      - "*"
+
 jobs:
   check-title:
     runs-on: ubuntu-latest
     steps:
-    - name: Check PR title
+    - name: Check PR title or branch name
       uses: actions/github-script@v4
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const payload = context.payload
-          const prTitle = payload.pull_request.title
-          // Modify the pattern to match the required format
-          const titlePattern = /^IAM-.+$/
-          if (!titlePattern.test(prTitle)) {
-            console.log('The PR title does not match the required format!')
-            // Fails the workflow
-            core.setFailed('PR title does not match the required format!')
-          } else {
-            console.log('PR title format is correct.')
+          const payload = context.payload;
+
+          if (payload.pull_request) {
+            const prTitle = payload.pull_request.title;
+            const titlePattern = /^IAM-.+$/;
+            if (!titlePattern.test(prTitle)) {
+              console.log('The PR title does not match the required format!');
+              core.setFailed('PR title does not match the required format!');
+            } else {
+              console.log('PR title format is correct.');
+            }
+          } else if (payload.ref && payload.ref.startsWith('refs/heads/')) {
+            const branchName = payload.ref.replace('refs/heads/', '');
+            const branchPattern = /^IAM-.+$/;
+            if (!branchPattern.test(branchName)) {
+              console.log('The branch name does not match the required format!');
+              core.setFailed('Branch name does not match the required format!');
+            } else {
+              console.log('Branch name format is correct.');
+            }
           }
