@@ -7,16 +7,12 @@ jobs:
   check-title:
     runs-on: ubuntu-latest
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v3  # Continue using actions/checkout@v3 to check out the Git repository.
-
     - name: Check PR title format
-      shell: bash
       run: |
-        PR_TITLE=$(git log --format=%s -n 1 ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }})
+        PR_TITLE="${{ github.event.pull_request.title }}"
 
         # Modify the pattern to match the required format
-        TITLE_PATTERN="IAM-.*"
+        TITLE_PATTERN="^IAM-.+$"
 
         if [[ ! $PR_TITLE =~ $TITLE_PATTERN ]]; then
           echo "The PR title does not match the required format!"
