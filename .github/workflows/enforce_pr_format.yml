@@ -2,23 +2,23 @@ name: "PR Title Check"
 on:
   pull_request:
     types: [opened, edited, synchronize]
+
 jobs:
   check-title:
     runs-on: ubuntu-latest
     steps:
-    - name: Check PR title
-      uses: actions/github-script@v4
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const payload = context.payload
-          const prTitle = payload.pull_request.title
-          // Modify the pattern to match the required format
-          const titlePattern = /^IAM-.+$/
-          if (!titlePattern.test(prTitle)) {
-            console.log('The PR title does not match the required format!')
-            // Fails the workflow
-            core.setFailed('PR title does not match the required format!')
-          } else {
-            console.log('PR title format is correct.')
-          }
+    - name: Check PR title format
+      shell: bash
+      run: |
+        PR_TITLE=$(git log --format=%s -n 1 ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }})
+
+        # Modify the pattern to match the required format
+        TITLE_PATTERN="IAM-.*"
+
+        if [[ ! $PR_TITLE =~ $TITLE_PATTERN ]]; then
+          echo "The PR title does not match the required format!"
+          # Fails the workflow
+          exit 1
+        else
+          echo "PR title format is correct."
+        fi
